@@ -91,8 +91,7 @@
             if ([contents isKindOfClass:[NSDictionary class]]) {
                 if ([contents[@"object"] isEqualToString:@"card"]) {
                     STPCard *card = [STPCard decodedObjectFromAPIResponse:contents];
-                    // ignore apple pay cards from the response
-                    if (card && !card.isApplePayCard) {
+                    if (card) {
                         [sources addObject:card];
                         if (defaultSourceId && [card.stripeID isEqualToString:defaultSourceId]) {
                             customer.defaultSource = card;
@@ -102,17 +101,9 @@
                 else if ([contents[@"object"] isEqualToString:@"source"]) {
                     STPSource *source = [STPSource decodedObjectFromAPIResponse:contents];
                     if (source) {
-                        if (source.type == STPSourceTypeCard
-                            && source.cardDetails != nil
-                            && source.cardDetails.isApplePayCard) {
-                            // do nothing
-                            // ignore apple pay cards from the response
-                        }
-                        else {
-                            [sources addObject:source];
-                            if (defaultSourceId && [source.stripeID isEqualToString:defaultSourceId]) {
-                                customer.defaultSource = source;
-                            }
+                        [sources addObject:source];
+                        if (defaultSourceId && [source.stripeID isEqualToString:defaultSourceId]) {
+                            customer.defaultSource = source;
                         }
                     }
                 }
